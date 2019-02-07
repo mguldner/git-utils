@@ -20,27 +20,27 @@ nomDossierAnalyse="Analyse_classe_$nomFichier"
 mkdir "Analyse\\$nomDossierAnalyse"
 
 # Récupération des méthodes de la classe
-javap $cheminClass > "Analyse\\$nomDossierAnalyse/listeMethodes_$nomFichier.log"
+javap -private $cheminClass > "Analyse\\$nomDossierAnalyse/listeMethodes_$nomFichier.log"
 
 # Récupération des noms de ces méthodes uniquement
+re='^[0-9]+$'
 grep -o '[a-zA-Z0-9]*(' "Analyse\\$nomDossierAnalyse/listeMethodes_$nomFichier.log" | while read -r line ; do 
 	line=${line::-1}
-	echo "$line" >> "Analyse\\$nomDossierAnalyse/listeMethodesSeules_$nomFichier.log"
+	if ! [[ $line =~ $re ]] ; then
+		echo "$line" >> "Analyse\\$nomDossierAnalyse/listeMethodesSeules_$nomFichier.log"
+	fi
 done 
 
 mkdir "Analyse\\$nomDossierAnalyse/diffs"
 
 # Récupération des modifications effectuées sur ces méthodes
 while read methodName; do
-  git log --after=$dateMin -L :$methodName:$cheminJava > "Analyse\\$nomDossierAnalyse/diffs/diff_$nomFichier_$methodName.log"
+  git log --after=$dateMin -L :$methodName\(:$cheminJava > "Analyse\\$nomDossierAnalyse/diffs/diff_$nomFichier_$methodName.log"
 done <"Analyse\\$nomDossierAnalyse/listeMethodesSeules_$nomFichier.log"
 
 cd "Analyse\\$nomDossierAnalyse/diffs"
 
 # Compte de ces modifications
 for diff in ./*.log; do
-	numberOfDiffs=$(grep -o 'diff --git' "$diff" | wc -l)
-	nomMethode="${diff:7:-4}"
-	echo "$nomMethode;$numberOfDiffs" >> "../nombreDiffs_$nomFichier.csv"
-	echo "$nomFichier;$nomMethode;$numberOfDiffs" >> "../../nombreDiffTotal.csv"
+	../../../diff_par_methode.sh -f $nomFichier -l $diff
 done
