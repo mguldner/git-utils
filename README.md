@@ -4,7 +4,7 @@
 
 !!! Careful to backslash !!!
 
-<code>./analyse_folder.sh -f "fodler\to\analyze"</code>
+<code>./analyse_folder.sh -f "folder\to\analyze"</code>
 
 
 # Utilisation
