@@ -1,5 +1,12 @@
 # git-utils
 
+# Exemple de fonctionnement
+
+!!! Careful to backslash !!!
+
+<code>./analyse_folder.sh -f "folder\to\analyze"</code>
+
+
 # Utilisation
 ## Pré-requis
 Pour utiliser ces scripts :
